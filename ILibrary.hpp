@@ -28,7 +28,7 @@ namespace arcade {
             virtual std::shared_ptr<arcade::Event> getCurrentEvent() = 0;
             virtual float getTimeElapsed() = 0;
             virtual void resetTimer() = 0;
-            virtual void loadProperties(const std::vector<PropertyLinker>) = 0;
+            virtual int loadProperties(std::vector<std::shared_ptr<Property>>) = 0;
             virtual void render(Matrix matrix) = 0; //Render management for Game*
             virtual void render() = 0; // Render managemet for the Menu
         protected:

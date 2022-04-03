@@ -10,72 +10,84 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
+#include <exception>
+#include <memory>
 #include <any>
 
-class Property {
-    public:
-        Property(const std::string &name, std::any element) : _name(name), _elem({element}) {};
-        Property(const std::string &name, std::vector<std::any> element) : _name(name) , _elem(element) {};
-        Property() = default;
-        ~Property() = default;
+namespace arcade {
 
-        Property &operator=(const Property &p) {
-            _name = p.getName();
-            _elem = p.getElements();
-            return (*this);
-        };
+    class Property {
+        public:
+            virtual ~Property() = default;
 
-        std::vector<std::any> getElements() const { return _elem; };
+            virtual int getType() = 0;
+    }; // DUMMY CLASS TO ENGLOB ALL
 
-        template <typename T>
-        T getElement() { return (std::any_cast<T>(_elem[0])); };
+    class PropertyBasic : public Property {
+        public:
+            PropertyBasic(const std::string &name, std::any element) : _name(name), _elem({element}) {};
+            PropertyBasic(const std::string &name, std::vector<std::any> element) : _name(name) , _elem(element) {};
 
-        template <typename T>
-        std::vector<T> getVElement() {
-            std::vector<T> list;
-            for (auto it = _elem.begin(); it != _elem.end(); it++)
-                list.push_back(std::any_cast<T>(*it));
-            return (list);
-        };
+            PropertyBasic &operator=(const PropertyBasic &p) {
+                _name = p.getName();
+                _elem = p.getElements();
+                return (*this);
+            };
 
-        std::string getName() const { return _name; };
-    protected:
-    private:
-        std::string _name;
-        std::vector<std::any> _elem;
-};
+            std::vector<std::any> getElements() const { return _elem; };
 
-class PropertyLinker {
-    public:
-        PropertyLinker(const char symbol, const std::vector<Property> properties) : _symbol(symbol), _props(properties) {};
-        PropertyLinker(const char symbol, const Property property) : _symbol(symbol), _props({property}) {};
-        PropertyLinker() = default;
+            std::vector<std::any> getPureElement() const { return _elem; };
 
-        template <typename T>
-        T get(const std::string &name) {
-            for (Property prop : _props)
-                if (prop.getName() == name) return (prop.getElement<T>());
-            throw ErrorManager("Invalid name property !");
-        };
+            template <typename T>
+            T getElement() { return (std::any_cast<T>(_elem[0])); };
 
-        template <typename T>
-        T getOr(const std::string &name, T def) {
-            try { return (get(name));
-            } catch (auto &e) { return def; };
-        }
+            template <typename T>
+            std::vector<T> getVElement() {
+                std::vector<T> list;
+                for (auto it = _elem.begin(); it != _elem.end(); it++)
+                    list.push_back(std::any_cast<T>(*it));
+                return (list);
+            };
 
-        template <typename T>
-        std::vector<T> getV(const std::string &name) {
-            for (Property prop : _props)
-                if (prop.getName() == name) return (prop.getVElement<T>());
-            throw ErrorManager("Invalid name property !");
-        }
+            int getType() { return 1; };
+            std::string getName() const { return _name; };
+        protected:
+        private:
+            std::string _name;
+            std::vector<std::any> _elem;
+    };
 
-        char getSymbol() const { return _symbol; }
-    private:
-        char _symbol;
-        std::vector<Property> _props;
-};
+    class PropertyList : public Property {
+        public:
+            PropertyList(const std::vector<PropertyBasic> properties, const char symbol = -1) : _props(properties), _symbol(symbol) {};
+            PropertyList(const PropertyBasic property, const char symbol = -1) : _props({property}), _symbol(symbol) {};
 
+            template <typename T>
+            std::unique_ptr<T> get(const std::string &name) {
+                for (PropertyBasic prop : _props)
+                    if (prop.getName() == name) return (std::make_unique<T>(prop.getElement<T>()));
+                return (nullptr);
+            };
+
+            template <typename T>
+            T getOr(const std::string &name, T def) {
+                std::unique_ptr<T> ptr = get<T>(name);
+                if (ptr) return ptr.get();
+                return def;
+            }
+
+            template <typename T>
+            std::vector<T> getV(const std::string &name) {
+                for (PropertyBasic prop : _props)
+                    if (prop.getName() == name) return (prop.getVElement<T>());
+                return (std::vector<T>());
+            }
+
+            char getSymbol() const { return _symbol; }
+            int getType() { return 2; };
+        private:
+            std::vector<PropertyBasic> _props;
+            char _symbol;
+    };
+}
 #endif /* !PROPERTY_HPP_ */
