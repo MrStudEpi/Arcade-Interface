@@ -10,6 +10,7 @@
 
 #include <string>
 #include <memory>
+#include <functional>
 
 #include "../common/Event.hpp"
 
@@ -24,9 +25,8 @@ namespace arcade {
 
             virtual ~IGame() = default;
 
-            virtual int isFinish() const = 0;
             virtual int listen(std::shared_ptr<arcade::Event> event) = 0; // Handle Event main part of the game
-            virtual int update(float time_elapsed) = 0;
+            virtual int update(float time_elapsed, std::function<void ()>) = 0; // Update the game and tell if it's finished
             virtual Matrix getMatrix() const = 0;
             virtual std::vector<std::shared_ptr<Property>> getProperties() const = 0;
         protected:

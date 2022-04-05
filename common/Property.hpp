@@ -19,8 +19,6 @@ namespace arcade {
     class Property {
         public:
             virtual ~Property() = default;
-
-            virtual int getType() = 0;
     }; // DUMMY CLASS TO ENGLOB ALL
 
     class PropertyBasic : public Property {
@@ -48,8 +46,6 @@ namespace arcade {
                     list.push_back(std::any_cast<T>(*it));
                 return (list);
             };
-
-            int getType() { return 1; };
             std::string getName() const { return _name; };
         protected:
         private:
@@ -84,7 +80,6 @@ namespace arcade {
             }
 
             char getSymbol() const { return _symbol; }
-            int getType() { return 2; };
         private:
             std::vector<PropertyBasic> _props;
             char _symbol;
