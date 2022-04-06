@@ -22,14 +22,17 @@ namespace arcade {
         public:
             virtual ~ILibrary() = default;
 
-            virtual void close() = 0;
+            //Common
             virtual bool isOpen() = 0;
-            virtual void init() = 0;
             virtual std::shared_ptr<arcade::Event> getCurrentEvent() = 0;
-            virtual float getTimeElapsed() = 0;
-            virtual void resetTimer() = 0;
-            virtual int loadProperties(std::vector<std::shared_ptr<Property>>) = 0;
+            virtual void close() = 0;
+
+            //Game
+            virtual void init(std::vector<std::shared_ptr<Property>>) = 0;
             virtual void render(Matrix matrix) = 0; //Render management for Game*
+
+            //Menu
+            virtual void init() = 0;
             virtual void render() = 0; // Render managemet for the Menu
         protected:
         private:

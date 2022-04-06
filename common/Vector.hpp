@@ -21,6 +21,7 @@ namespace arcade {
 
             T getX() const { return _x; };
             T getY() const { return _y; };
+            bool isNot(T t) const { return _x != t && _y != t; };
             std::string to_string() const { return (std::to_string(_x) + ":" + std::to_string(_y)); };
             Vector2D operator-(Vector2D<T> vec) { return Vector2D<T>(_x - vec.getX(), _y - vec.getY()); };
             Vector2D operator+(Vector2D<T> vec) { return Vector2D<T>(_x + vec.getX(), _y + vec.getY());};

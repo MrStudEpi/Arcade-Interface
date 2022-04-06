@@ -24,6 +24,12 @@ namespace arcade {
                 AKEY_DOWN,
                 AKEY_LEFT,
                 AKEY_RIGHT,
+                AKEY_Y,
+                AKEY_U,
+                AKEY_I,
+                AKEY_O,
+                AKEY_R,
+                AKEY_M
             };
             Event(int t, std::vector<int> v, int s = -1) : _type(t), _value(v), _spectype(s) {};
 

@@ -27,6 +27,7 @@ namespace arcade {
 
             virtual int listen(std::shared_ptr<arcade::Event> event) = 0; // Handle Event main part of the game
             virtual int update(float time_elapsed, std::function<void ()>) = 0; // Update the game and tell if it's finished
+            virtual void reset() = 0; // When reseting the game
             virtual Matrix getMatrix() const = 0;
             virtual std::vector<std::shared_ptr<Property>> getProperties() const = 0;
         protected:
